@@ -23,7 +23,7 @@ function signOut(): bool
             ]);   
 }
 
-// redirect user to homepage
+// redirect user to homepage 
 return session_destroy();
 header('Location: index.php', true, 303);
 exit;
