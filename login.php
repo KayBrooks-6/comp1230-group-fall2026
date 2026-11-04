@@ -62,8 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- we can add css if we want -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -113,6 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit">Log In</button>
         </form>
+
+        <div style="margin-top: 15px;">
+            <p>Don't have an account? <a href="register.php"><button type="button">Register here</button></a></p>
+        </div>
 
     </main>
 </body>
