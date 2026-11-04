@@ -6,6 +6,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
  $errors = [];
 
+
+// change dbname and name to your id
 try {
         $pdo = new PDO("mysql:host=localhost;dbname=f6827445_project;charset=utf8mb4", "f6827445_tester1", "tester1");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
