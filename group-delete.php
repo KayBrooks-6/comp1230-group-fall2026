@@ -1,16 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delete Group</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-<body>
-  <?php include __DIR__ . '/header.php'; ?>
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php', true, 303);
+    exit;
+}
 
-</body>
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php', true, 303);
+    exit;
+}
 
-</html>
+$id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+if (!$id || $id < 1) {
+    header('Location: index.php', true, 303);
+    exit;
+}
+
+try {
+    $pdo = require __DIR__ . '/db.php';
+
+    $statement = $pdo->prepare(
+        'DELETE FROM study_groups WHERE id = :id'
+    );
+
+    $statement->execute([':id' => $id]);
+
+    header('Location: index.php', true, 303);
+    exit;
+
+} catch (PDOException $e) {
+    error_log('Database Error: ' . $e->getMessage());
+    exit('Database error.');
+}
