@@ -32,7 +32,6 @@ try {
 
     header('Location: index.php', true, 303);
     exit;
-
 } catch (PDOException $e) {
     error_log('Database Error: ' . $e->getMessage());
     exit('Database error.');

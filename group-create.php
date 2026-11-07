@@ -113,7 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             header('Location: index.php', true, 303);
             exit;
-
         } catch (PDOException $e) {
             $errors[] = 'Database error.';
             error_log('Database Error: ' . $e->getMessage());
@@ -128,83 +127,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Create Study Group</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<header>
-    <nav>
-        <a href="index.php">Home</a> |
-        <a href="team.php">Team</a>
-        | Logged in as <?= htmlspecialchars($_SESSION['user']['display_name'], ENT_QUOTES, 'UTF-8') ?>
-        | <a href="group-create.php">Create Group</a>
+    <?php include __DIR__ . '/header.php'; ?>
 
-        <form action="logout.php" method="POST" style="display:inline;">
-            <button type="submit">Log out</button>
+    <main>
+        <h1>Create Study Group</h1>
+
+        <?php if (!empty($errors)): ?>
+            <div style="color: red;">
+                <?php foreach ($errors as $error): ?>
+                    <p><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <form action="group-create.php" method="POST">
+
+            <p>
+                <label for="course_code">Course Code:</label><br>
+                <input type="text" id="course_code" name="course_code"
+                    maxlength="8" required
+                    value="<?= htmlspecialchars($course_code, ENT_QUOTES, 'UTF-8') ?>">
+            </p>
+
+            <p>
+                <label for="title">Title:</label><br>
+                <input type="text" id="title" name="title"
+                    minlength="3" maxlength="80" required
+                    value="<?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>">
+            </p>
+
+            <p>
+                <label for="description">Description:</label><br>
+                <textarea id="description" name="description"
+                    maxlength="1000" required rows="5" cols="40"><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea>
+            </p>
+
+            <p>
+                <label for="meets_at">Meeting Date and Time:</label><br>
+                <input type="datetime-local" id="meets_at" name="meets_at"
+                    required
+                    value="<?= htmlspecialchars($meets_at, ENT_QUOTES, 'UTF-8') ?>">
+            </p>
+
+            <p>
+                <label for="location">Location:</label><br>
+                <input type="text" id="location" name="location"
+                    maxlength="80" required
+                    value="<?= htmlspecialchars($location, ENT_QUOTES, 'UTF-8') ?>">
+            </p>
+
+            <p>
+                <label for="capacity">Capacity:</label><br>
+                <input type="number" id="capacity" name="capacity"
+                    min="2" max="10" step="1" required
+                    value="<?= htmlspecialchars($capacity, ENT_QUOTES, 'UTF-8') ?>">
+            </p>
+
+            <button type="submit">Create Group</button>
+            <a href="index.php">Cancel</a>
+
         </form>
-    </nav>
-</header>
+    </main>
 
-<main>
-    <h1>Create Study Group</h1>
-
-    <?php if (!empty($errors)): ?>
-        <div style="color: red;">
-            <?php foreach ($errors as $error): ?>
-                <p><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-    <form action="group-create.php" method="POST">
-
-        <p>
-            <label for="course_code">Course Code:</label><br>
-            <input type="text" id="course_code" name="course_code"
-                maxlength="8" required
-                value="<?= htmlspecialchars($course_code, ENT_QUOTES, 'UTF-8') ?>">
-        </p>
-
-        <p>
-            <label for="title">Title:</label><br>
-            <input type="text" id="title" name="title"
-                minlength="3" maxlength="80" required
-                value="<?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>">
-        </p>
-
-        <p>
-            <label for="description">Description:</label><br>
-            <textarea id="description" name="description"
-                maxlength="1000" required rows="5" cols="40"><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea>
-        </p>
-
-        <p>
-            <label for="meets_at">Meeting Date and Time:</label><br>
-            <input type="datetime-local" id="meets_at" name="meets_at"
-                required
-                value="<?= htmlspecialchars($meets_at, ENT_QUOTES, 'UTF-8') ?>">
-        </p>
-
-        <p>
-            <label for="location">Location:</label><br>
-            <input type="text" id="location" name="location"
-                maxlength="80" required
-                value="<?= htmlspecialchars($location, ENT_QUOTES, 'UTF-8') ?>">
-        </p>
-
-        <p>
-            <label for="capacity">Capacity:</label><br>
-            <input type="number" id="capacity" name="capacity"
-                min="2" max="10" step="1" required
-                value="<?= htmlspecialchars($capacity, ENT_QUOTES, 'UTF-8') ?>">
-        </p>
-
-        <button type="submit">Create Group</button>
-        <a href="index.php">Cancel</a>
-
-    </form>
-</main>
-
+    <?php include __DIR__ . '/footer.php'; ?>
 </body>
+
 </html>

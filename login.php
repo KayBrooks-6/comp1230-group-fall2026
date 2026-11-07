@@ -103,6 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
     </main>
+
+    <?php include __DIR__ . '/footer.php'; ?>
 </body>
 
 </html>
