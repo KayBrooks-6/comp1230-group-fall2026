@@ -3,6 +3,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/csrf.php';
+requireCsrf();
+
 if (!isset($_SESSION['user'])) {
     header('Location: login.php', true, 303);
     exit;
@@ -175,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form action="group-edit.php?id=<?= (int)$id ?>" method="POST">
-
+            <?= csrfField() ?>
             <p>
                 <label for="course_code">Course Code:</label><br>
                 <input type="text" id="course_code" name="course_code"

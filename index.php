@@ -60,6 +60,7 @@ $groups = $stmt->fetchAll();
 
                   <!-- delete form -->
                   <form action="group-delete.php" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this group?');">
+                    <?= csrfField() ?>
                     <input type="hidden" name="id" value="<?= $group['id'] ?>">
                     <button type="submit">Delete</button>
                   </form>

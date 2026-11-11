@@ -21,6 +21,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/csrf.php';
+requireCsrf();
+
 function signOut(): bool
 {
     // strict post only 
