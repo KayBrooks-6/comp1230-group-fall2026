@@ -4,6 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/csrf.php';
+requireCsrf();
+
 if (!isset($_SESSION['user'])) {
     header('Location: login.php', true, 303);
     exit;
