@@ -113,7 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':location' => $location,
                 ':capacity' => (int)$capacity
             ]);
-
+           // newly created group
+            $newGroup = $pdo->lastInsertId();
+            $membershipStmt = $pdo->prepare(
+                "INSERT INTO memberships (user_id, group_id) WALIES (:user_id, :group_id)"
+            );
+            $membershipStmt->execute([
+                ':user_id' => $user_id,
+                ':group_id' => $newGroup ]);
+            // 
             header('Location: index.php', true, 303);
             exit;
         } catch (PDOException $e) {
