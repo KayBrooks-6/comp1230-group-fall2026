@@ -113,15 +113,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':location' => $location,
                 ':capacity' => (int)$capacity
             ]);
-           // newly created group
+            // newly created group
             $newGroup = $pdo->lastInsertId();
             $membershipStmt = $pdo->prepare(
-                "INSERT INTO memberships (user_id, group_id) WALIES (:user_id, :group_id)"
+                "INSERT INTO memberships (user_id, group_id) VALUES (:user_id, :group_id)"
             );
             $membershipStmt->execute([
-                ':user_id' => $user_id,
-                ':group_id' => $newGroup ]);
-            // 
+                ':user_id' => $_SESSION['user']['id'],
+                ':group_id' => $newGroup
+            ]);
+
             header('Location: index.php', true, 303);
             exit;
         } catch (PDOException $e) {
