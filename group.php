@@ -2,12 +2,10 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+include __DIR__ . '/header.php';       
 $pdo = require_once __DIR__ . '/db.php';
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+require_once __DIR__ . '/csrf.php';
 
 
 
@@ -21,12 +19,14 @@ if (!$group_id) {
 }
 
     // Fetch group dets
-$stmt = $pdo->prepare("SELECT study_groups.*, COUNT(memberships.user_id) AS number_of_member,
+$stmt = $pdo->prepare("SELECT study_groups.*, users.display_name AS owner_name,
+  COUNT(memberships.user_id) AS number_of_member,
    (study_groups.capacity - COUNT(memberships.user_id)) AS places_left
    FROM study_groups
+   LEFT JOIN users ON study_groups.owner_id = users.id
    LEFT JOIN memberships ON study_groups.id = memberships.group_id
    WHERE study_groups.id = ?
-   GROUP BY study_groups.id");
+   GROUP BY study_groups.id, users.display_name");
 $stmt->execute([$group_id]);
 $group = $stmt->fetch();
 
@@ -43,14 +43,14 @@ $members = $stmt->fetchAll();
 
 
     $logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
-    $user_id = $_SESSION['user_id'] ?? null;
+    $user_id = $_SESSION['user']['id'] ?? null;
 
     $is_owner = false;
     $is_member = false;
     $places_Left = (int) $group['places_left'];
 
     if ($logged_in && $user_id) {
-        $is_owner = ((int)$group_id['owner_id'] === (int)$user_id);
+        $is_owner = ((int)$group['owner_id'] === (int)$user_id);
 
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM memberships WHERE group_id = ? AND user_id = ?");
             $stmt->execute([$group_id, $user_id]);
@@ -69,45 +69,53 @@ $members = $stmt->fetchAll();
     <h2><strong>Course:</strong> <?= htmlspecialchars($group['course_code']) ?></h2>
         <p><?= htmlspecialchars($group['description']) ?></p>
      <ul>
+        <li><strong>Owner:</strong> <?= htmlspecialchars($group['owner_name']) ?></li>
         <li><strong>Time:</strong> <?= htmlspecialchars($group['meets_at']) ?></li>
         <li><strong>Capacity:</strong> <?= htmlspecialchars($group['capacity']) ?></li>
-        <li><strong>Place:</strong> <?= htmlspecialchars($group['number_of_member']) ?></li>
+        <li><strong>Place:</strong> <?= htmlspecialchars($group['location']) ?></li>
         <li></strong>Places left:</strong> <?= $places_Left ?></li>
     </ul>   
         <p><strong>Members List</strong></p>
         <ul>
-        <?php if (empty($members_list)): ?>
+        <?php if (empty($members)): ?>
             <li>No members</li>
-        <?php else: ?>    
-            <li><?= htmlspecialchars($members_list['display_name']) ?></li>       
+        <?php else: ?>
+        <?php foreach ($members as $member): ?>    
+            <li><?= htmlspecialchars($member['display_name']) ?></li> 
+        <?php endforeach; ?>          
         <?php endif; ?>     
-    </ul>   
+    </ul>      
+        <?php if (!empty($success)): ?>
+            <div class="alert alert-success">
+                <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?>
+            </div>      
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>    
 
-    <div>
-        <?php if ($error): ?>
-            <?php if (is_string($error)): ?>
-                <p><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
-            <?php endif; ?>
-        <?php endif; ?>         
-    </div>
+            <?php if (!empty($error)): ?>
+            <div class="alert alert-danger error">
+                <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
+            </div>      
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>     
     <div>
             <?php if($logged_in): ?>
             <?php if ($is_owner): ?>
                 <p>Owner of the group</p>
             <?php elseif ($is_member): ?>
                 <form action="group-leave.php" method="post">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-                    <input type="hidden" name="group_id" value="<?= (int)$group['id'] ?>">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="id" value="<?= (int)$group['id'] ?>">
                     <button type="submit">Leave</button>
                 </form>
             <?php elseif ($places_Left > 0): ?>
                 <form action="group-join.php" method="post">
-                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-                        <input type="hidden" name="group_id" value="<?= (int)$group['id'] ?>">
+                        <?= csrfField() ?>      
+                        <input type="hidden" name="id" value="<?= (int)$group['id'] ?>">
                         <button type="submit">Join</button>
                 </form>        
             <?php else: ?>
-                <p class="error">Study group is full.</p> 
+                <div class="error">This study group is full.</div> 
             <?php endif; ?>
             <?php else: ?>          
                 <p><a href="login.php">Log in</a></p>
