@@ -32,6 +32,7 @@ $groups = $stmt->fetchAll();
       <table border="1" cellpadding="5" cellspacing="0">
         <thead>
           <tr>
+                
             <th>Course</th>
             <th>Title</th>
             <th>When</th>
@@ -47,11 +48,14 @@ $groups = $stmt->fetchAll();
           <?php foreach ($groups as $group): ?>
             <tr>
               <td><?= htmlspecialchars($group['course_code']) ?></td>
-              <td><?= htmlspecialchars($group['title']) ?></td>
+              <td>
+                <a href="group.php?id=<?= $group['id'] ?>">
+                <?= htmlspecialchars($group['title']) ?></td>
               <td><?= htmlspecialchars($group['meets_at']) ?></td>
               <td><?= htmlspecialchars($group['location']) ?></td>
               <td><?= htmlspecialchars($group['capacity']) ?></td>
               <td><?= htmlspecialchars($group['display_name']) ?></td>
+
 
               <?php if (isset($_SESSION['user'])): ?>
                 <td>
