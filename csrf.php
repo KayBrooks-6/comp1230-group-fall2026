@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // Generate or retrieve the session CSRF token
 function csrfToken()
 {
-  if (empty($_SESSION['csrf_token'])) {
+  if (empty($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
   }
   return $_SESSION['csrf_token'];
@@ -24,12 +24,13 @@ function csrfField()
 // Validate the token on incoming POST requests
 function requireCsrf()
 {
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $submittedToken = $_POST['csrf_token'] ?? '';
+    $sessionToken = $_SESSION['csrf_token'] ?? '';
 
-    if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+    if (!isset($_SESSION['csrf_token']) || !is_string($sessionToken) || $submittedToken === '' || !hash_equals($_SESSION['csrf_token'], $submittedToken)) {
       http_response_code(403);
-      exit('403 Forbidden: Invalid or missing CSRF token.');
+      exit('<p class="error">403 Forbidden: Invalid or missing CSRF token.</p>');
     }
   }
 }
