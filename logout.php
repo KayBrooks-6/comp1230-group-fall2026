@@ -9,24 +9,7 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="index.php">Home</a>
-            <a class="nav-link" href="team.php">Team</a>
-            <?php if (isset($_SESSION['user'])): ?>
-                <span class="navbar-text">
-                    Logged in as <?= htmlspecialchars($_SESSION['user']['display_name']) ?>
-                </span>
-                | <a href="group-create.php">Create Group</a>
-                <form action="logout.php" method="POST" style="display:inline;">
-                    <button type="submit">Log out</button>
-                </form>
-            <?php else: ?>
-                | <a href="login.php">Log in</a> |
-                <a href="register.php">Register</a>
-            <?php endif; ?>
-        </nav>
-    </header>
+    <?php include __DIR__ . '/header.php'; ?>
 </body>
 
 </html>
