@@ -89,7 +89,7 @@ $currentUserId = isset($_SESSION['user']['id']) ? (int)$_SESSION['user']['id'] :
                     <td><?= htmlspecialchars($group['meets_at'], ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= htmlspecialchars($group['location'], ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= (int)$group['capacity'] ?></td>
-                    <td><?= $placesLeft ?></td>
+                    <td><?= htmlspecialchars((string)$placesLeft, ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= htmlspecialchars($group['display_name'], ENT_QUOTES, 'UTF-8') ?></td>
 
                     <?php if ($currentUserId !== null): ?>

@@ -1,17 +1,19 @@
 <?php
-// Start session if you want to show login state in the header
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Group Finder - Team Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="bg-light">
     <?php include __DIR__ . '/header.php'; ?>
 
     <main class="container py-4">
@@ -45,11 +47,7 @@ session_start();
                             <tr>
                                 <th scope="row" class="fw-semibold">Rachel Bryant</th>
                                 <td>100827445</td>
-                                <td>
-                                    <a href="https://f827445.gblearn.com/comp1230/assignments/project/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
-                                        Visit Copy
-                                    </a>
-                                </td>
+                                <td><a href="https://f6827445.gblearn.com/comp1230/assignments/project/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Visit Copy</a></td>
                                 <td>
                                     <a href="aud-phase1.pdf" target="_blank" rel="noopener noreferrer" class="me-2">Phase 1 PDF</a>
                                     <a href="aud-phase2.pdf" target="_blank" rel="noopener noreferrer">Phase 2 PDF</a>
@@ -59,11 +57,7 @@ session_start();
                             <tr>
                                 <th scope="row" class="fw-semibold">Kay Brooks</th>
                                 <td>101641010</td>
-                                <td>
-                                    <a href="https://f6641010.gblearn.com/comp1230/assignments/project/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
-                                        Visit Copy
-                                    </a>
-                                </td>
+                                <td><a href="https://f6641010.gblearn.com/comp1230/assignments/project/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Visit Copy</a></td>
                                 <td>
                                     <a href="aud-phase1.pdf" target="_blank" rel="noopener noreferrer" class="me-2">Phase 1 PDF</a>
                                     <a href="aud-phase2.pdf" target="_blank" rel="noopener noreferrer">Phase 2 PDF</a>
@@ -73,11 +67,7 @@ session_start();
                             <tr>
                                 <th scope="row" class="fw-semibold">Kyle Ramharack</th>
                                 <td>101462870</td>
-                                <td>
-                                    <a href="https://f462870.gblearn.com/comp1230/assignments/project/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">
-                                        Visit Copy
-                                    </a>
-                                </td>
+                                <td><a href="https://f6462870.gblearn.com/comp1230/assignments/project/" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Visit Copy</a></td>
                                 <td>
                                     <a href="aud-phase1.pdf" target="_blank" rel="noopener noreferrer" class="me-2">Phase 1 PDF</a>
                                     <a href="aud-phase2.pdf" target="_blank" rel="noopener noreferrer">Phase 2 PDF</a>
