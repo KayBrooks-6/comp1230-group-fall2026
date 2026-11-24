@@ -1,0 +1,6 @@
+# project/.htaccess (GBLearn), SUPPLIED. Do not change it.
+# The whole project folder is inside public_html, so Apache could send any file in it.
+# This rule sends every request into public/ instead, so bootstrap.php, src/, views/,
+# lib/ and the rest cannot be opened. It works only while this file is on the server.
+RewriteEngine On
+RewriteRule ^(?!public/)(.*)$ public/$1 [L]
