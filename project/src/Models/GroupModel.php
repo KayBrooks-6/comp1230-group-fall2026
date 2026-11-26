@@ -17,26 +17,63 @@ class GroupModel
 
     public function findWithOwnerAndCounts(int $groupId): ?array
     {
-        // TODO: prepared SELECT for a single group with owner name and places_left, or null if not found
-        return null;
+        $stmt = $this->pdo->prepare("
+            SELECT
+                study_groups.*,
+                users.display_name AS owner_name,
+                COUNT(memberships.user_id) AS member_count,
+                (study_groups.capacity - COUNT(memberships.user_id)) AS places_left
+            FROM study_groups
+            LEFT JOIN users ON study_groups.owner_id = users.id
+            LEFT JOIN memberships ON study_groups.id = memberships.group_id
+            WHERE study_groups.id = ?
+            GROUP BY study_groups.id, users.display_name
+        ");
+        $stmt->execute([$groupId]);
+        $row = $stmt->fetch();
+
+        return $row ?: null;
     }
 
     public function members(int $groupId): array
     {
-        // TODO: prepared SELECT of member display_names for a group
-        return [];
+        $stmt = $this->pdo->prepare("
+            SELECT users.display_name
+            FROM memberships
+            JOIN users ON memberships.user_id = users.id
+            WHERE memberships.group_id = ?
+            ORDER BY users.display_name ASC
+        ");
+        $stmt->execute([$groupId]);
+
+        return $stmt->fetchAll();
     }
 
     public function membersWithJoinedAt(int $groupId): array
     {
-        // TODO: prepared SELECT of display_name, joined_at ordered by earliest joined_at first (for CSV)
-        return [];
+        $stmt = $this->pdo->prepare("
+            SELECT users.display_name, memberships.joined_at
+            FROM memberships
+            JOIN users ON memberships.user_id = users.id
+            WHERE memberships.group_id = ?
+            ORDER BY memberships.joined_at ASC, users.display_name ASC
+        ");
+        $stmt->execute([$groupId]);
+
+        return $stmt->fetchAll();
     }
 
     public function isMember(int $groupId, int $userId): bool
     {
-        // TODO: prepared SELECT check whether $userId is in memberships for $groupId
-        return false;
+        $stmt = $this->pdo->prepare("
+            SELECT 1
+            FROM memberships
+            WHERE group_id = ? AND user_id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$groupId, $userId]);
+
+        return (bool) $stmt->fetchColumn();
     }
 
     public function validate(array $input): array
@@ -65,19 +102,51 @@ class GroupModel
 
     public function addMember(int $groupId, int $userId): bool
     {
-        // TODO: INSERT into memberships (user_id, group_id)
-        return false;
+        $stmt = $this->pdo->prepare("
+            INSERT INTO memberships (user_id, group_id)
+            VALUES (?, ?)
+        ");
+
+        return $stmt->execute([$userId, $groupId]);
     }
 
     public function removeMember(int $groupId, int $userId): bool
     {
-        // TODO: DELETE from memberships WHERE group_id = ? AND user_id = ?
-        return false;
+        $stmt = $this->pdo->prepare("
+            DELETE FROM memberships
+            WHERE group_id = ? AND user_id = ?
+        ");
+
+        return $stmt->execute([$groupId, $userId]);
     }
 
     public function upcoming(): array
     {
-        // TODO: prepared SELECT with LEFT JOIN memberships, COUNT, GROUP BY, WHERE study_groups.meets_at > NOW(), ORDER BY study_groups.meets_at ASC
-        return [];
+        $stmt = $this->pdo->query("
+            SELECT
+                study_groups.id,
+                study_groups.course_code,
+                study_groups.title,
+                study_groups.meets_at,
+                study_groups.location,
+                study_groups.capacity,
+                (study_groups.capacity - COUNT(memberships.user_id)) AS places_left,
+                users.display_name AS owner
+            FROM study_groups
+            JOIN users ON study_groups.owner_id = users.id
+            LEFT JOIN memberships ON study_groups.id = memberships.group_id
+            WHERE study_groups.meets_at > NOW()
+            GROUP BY
+                study_groups.id,
+                study_groups.course_code,
+                study_groups.title,
+                study_groups.meets_at,
+                study_groups.location,
+                study_groups.capacity,
+                users.display_name
+            ORDER BY study_groups.meets_at ASC
+        ");
+
+        return $stmt->fetchAll();
     }
 }
